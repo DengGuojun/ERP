@@ -1,0 +1,38 @@
+﻿<?xml version="1.0"?>
+
+<project name="ERP" default="${client.jar}" basedir=".">
+
+	<!-- dir/file define -->
+	<property name="build.dir" value="WebContent/WEB-INF/classes/"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="client.jar" value="lpmas-erp-client-0.1.0.jar"/>
+
+	<target name="prepare">
+		<mkdir dir="${dist.dir}"/>
+		<delete>
+			<fileset dir="${dist.dir}">
+				<include name="${dist.jar}"/>
+			</fileset>
+		</delete>
+	</target>
+	
+	<target name="${client.jar}" depends="prepare">
+		<jar jarfile="${dist.dir}/${client.jar}">
+			<fileset dir="${build.dir}" >
+				<include name="com/lpmas/erp/warehouse/bean/**"/>
+				<include name="com/lpmas/erp/warehouse/config/**"/>
+				<include name="com/lpmas/erp/config/ErpClientCacheConfig.class"/>
+				<include name="com/lpmas/erp/config/ErpClientConfig.class"/>
+				<include name="com/lpmas/erp/config/ErpConsoleConfig.class"/>
+				<include name="com/lpmas/erp/config/ErpCacheConfig.class"/>
+				<include name="com/lpmas/erp/component/**"/>
+				<include name="com/lpmas/erp/client/**"/>
+				<include name="com/lpmas/erp/client/cache/**"/>
+				<include name="com/lpmas/erp/bean/**"/>
+				<include name="com/lpmas/erp/business/OrderInfoMediator.class"/>
+				<exclude name="com/lpmas/erp/component/impl/**"/>
+			</fileset>
+		</jar>
+	</target>
+	
+</project>

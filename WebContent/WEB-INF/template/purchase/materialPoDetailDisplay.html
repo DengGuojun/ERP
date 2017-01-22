@@ -1,0 +1,49 @@
+<meta charset="utf-8" />
+
+<#assign readonly= "">
+<style>
+th span{color:#e22000;font-size:12px;line-height: 23px; font-family:\5FAE\8F6F\96C5\9ED1, \65B0\5B8B\4F53}
+</style>
+<p>采购明细</p>
+<div id="detailDisplay">
+	<table id="detail" width="100%" border="0" cellpadding="0" class="table_style">
+		<tr>
+			<th width="5%"><input type="checkbox" id="selectAll" onchange="checkAll(this)">选择</th>
+			<th width="5%">物料类型</th>
+			<th>物料编码</th>
+			<th>物料名称</th>
+			<th>型号规格</th>
+			<th width="10%"><span>*</span>采购计量单位</th>
+			<th><span>*</span>采购单价(元)</th>
+			<th><span>*</span>采购数量</th>
+			<th>计划合计金额(元)</th>
+			<th width="20%">备注</th>
+		</tr>
+		<#list ItemList as item>
+			<tr>
+			<#assign id="${item.itemId}">
+				<td><input type="checkbox" name="select"></td>
+				<td>${ItemTypeMap[id]}</td>
+				<td>${item.wareNumber}</td>
+				<td>${ItemDetailMap[id].materialName}</td>
+				<td>${ItemDetailMap[id].specification}</td>
+				<td><input type="hidden" name="unit_${item.itemId}" id="unit" value="${item.unit}"><input type="text" size="10" maxlength="10" readOnly onclick="unitSelectionDo(this)" checkStr="采购计量单位;txt;true;;100" id="unitName" value="${(UnitNameMap[id])!''}"  onchange="itemModifyOnChange(this)" ${readonly}></td>
+				<td><input type="text" size="10" maxlength="10" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' checkStr="采购单价;num;true;;100" name="unitPrice_${item.itemId}" id="unitPrice" value="${item.unitPrice}" onchange="itemModifyOnChange(this)" ${readonly}></td>
+				<td><input type="text" size="10" maxlength="10" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' checkStr="采购数量;num;true;;100" name="quatity_${item.itemId}" id="quatity" value="${item.quatity}" onchange="itemModifyOnChange(this)" ${readonly}></td>
+				<td><span id="total" name="total">${item.totalAmount}</span></td>
+				<td><input type="text" checkStr="备注;txt;false;;100" name="memo_${item.itemId}" id="memo" value="${item.memo}" onchange="itemModifyOnChange(this)" ${readonly}></td>
+				<td><input type="hidden" name="itemId" value="${item.itemId}"></td>
+				<td><input type="hidden" name="selectedItem" value="${ItemDetailMap[id].materialId}"></td>
+			</tr>
+		</#list>
+	</table>
+	<p>
+	  <span class="int_label">计划总金额：</span>
+	  <span id="poAmount">${(OrderInfoBean.poAmount)!'0.00'}</span>
+	</p>
+	<#if isModify==true>
+	<input type="button" name="button" id="add" class="modifysubbtn" onclick="addRow()" value="添加" />
+	<input type="button" name="button" id="delete" class="modifysubbtn" onclick="delRow()" value="删除" />
+	</#if>
+</div>
+&nbsp;&nbsp;

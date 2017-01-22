@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mongodbs>
+	<mongodb>
+		<db_name>erp</db_name>
+		<server_addresses>
+			<server_address>
+				<inet_address>172.16.3.13</inet_address>
+				<port>27017</port>
+			</server_address>
+		</server_addresses>
+		<user_name>root</user_name>
+		<password>123456</password>
+		<connections_per_host>300</connections_per_host>
+		<connect_timeout>15000</connect_timeout>
+		<max_wait_time>3000</max_wait_time>
+		<socket_timeout>0</socket_timeout>
+		<threads_allowed_to_block_for_connection_multiplier>5000</threads_allowed_to_block_for_connection_multiplier>
+	</mongodb>
+</mongodbs>

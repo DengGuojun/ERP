@@ -1,0 +1,90 @@
+<meta charset="utf-8" />
+
+<#assign readonly= "">
+<style>
+th span{color:#e22000;font-size:12px;line-height: 23px; font-family:\5FAE\8F6F\96C5\9ED1, \65B0\5B8B\4F53}
+</style>
+<p>入库明细</p>
+<div id="detailDisplay">
+	<table id="detail" width="100%" border="0" cellpadding="0" class="table_style">
+		<tr>
+			<#if hasSource==false>
+			<th><input type="checkbox" id="selectAll" onchange="checkAll(this)">选择</th>
+			</#if>
+			<th>物料编码</th>
+			<th>物料名称</th>
+			<th>型号规格</th>
+			<th><span>*</span>采购计量单位</th>
+			<th><span>*</span>应收数量</th>
+			<th><span>*</span>实收数量</th>
+			<th width="5%"><span>*</span>量差</th>
+			<th><span>*</span>残次品</th>
+			<th><span>*</span>批次号</th>
+			<th><span>*</span>生产日期</th>
+			<th><span>*</span>保质期(天)</th>
+			<th><span>*</span>保质期至</th>
+			<th width="10%">备注</th>
+		</tr>
+		
+		
+			<#list ItemList as item>
+				<tr>
+				<#assign id="${item.wareId}">
+					<#if hasSource==false>
+					<td><input type="checkbox" name="select"></td>
+					</#if>
+					<td><span>${(ItemDetailMap[id].materialNumber)!''}</span></td>
+					<td><span>${(ItemDetailMap[id].materialName)!''}</span></td>
+					<td><span>${(ItemDetailMap[id].specification)!''}</span></td>
+					<td><input type="hidden" name="unit_${item.wareId}" id="unit" value="${item.unit}"><input type="text" size="10" maxlength="10" readOnly onclick="unitSelectionDo(this)" checkStr="采购计量单位;txt;true;;100" id="unitName" value="${(UnitNameMap[id])!''}" onchange="itemModifyOnChange(this)" ${readonly}></td>
+					<td><input type="text" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" maxlength="10" checkStr="应收数量;num;true;;100" name="receivableQuantity_${item.wareId}" id="receivableQuantity" value="${(item.receivableQuantity)!''}" onchange="itemModifyOnChange(this)" ${readonly}></td>
+					<td><input type="text" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" maxlength="10" checkStr="实收数量;num;true;;100" name="stockInQuantity_${item.wareId}" id="stockInQuantity" value="${(item.stockInQuantity)!''}" onchange="itemModifyOnChange(this)" ${readonly}></td>
+					<td><span id="discrepancy" name="discrepancy">${(DiscrepancyMap[id])!'0.00'}</span></td>
+					<td><input type="text" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" maxlength="10" checkStr="残次品;num;true;;100" name="defectQuantity_${item.wareId}" id="defectQuantity" value="${(item.defectQuantity)!''}" ${readonly}></td>
+					<td><input type="text" size="10" maxlength="10" checkStr="批次号;txt;true;;100" name="batchNumber_${item.wareId}" id="batchNumber" value="${(item.batchNumber)!''}" onchange="itemModifyOnChange(this)" ${readonly}></td>
+					<td><input type="text" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" readOnly checkStr="生产日期;date;true;;100" name="productionDate_${item.wareId}" id="productionDate" value="${(item.productionDate?string('yyyy-MM-dd'))!''}" ${readonly} 
+						onclick="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'2008-01-01',maxDate:'2020-01-01'})"></td>
+					<#if fromSource==true>
+					   <#if hasExpirationMap[id]==false>
+					   <td><input type="text" readOnly onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" maxlength="10" checkStr="保质期;num;false;;100" name="guaranteePeriod_${item.wareId}" id="guaranteePeriod" value="" ${readonly}></td>
+					   <td><input type="text" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" readOnly checkStr="保质期至;date;false;;100" name="expirationDate_${item.wareId}" id="expirationDate" value="" ${readonly} ></td>
+					   <#else>
+					   <td><input type="text" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" maxlength="10" checkStr="保质期;num;true;;100" name="guaranteePeriod_${item.wareId}" id="guaranteePeriod" value="${(guaranteePeriodMap[id])!''}" ${readonly}></td>
+					   <td><input type="text" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" readOnly checkStr="保质期至;date;true;;100" name="expirationDate_${item.wareId}" id="expirationDate" value="" ${readonly} 
+						onclick="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'2008-01-01',maxDate:'2020-01-01'})"></td>
+					   </#if>
+					   <td><input type="text" checkStr="备注;txt;false;;100" name="memo_${item.wareId}" size="20" id="memo" value="" ${readonly}></td>
+					<#else>
+					<#if ((hasExpirationMap[id]==false)&&isModify)>
+					<td><input type="text" readOnly onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" maxlength="10" checkStr="保质期;num;false;;100" name="guaranteePeriod_${item.wareId}" id="guaranteePeriod" value="" ${readonly}></td>
+					<td><input type="text" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" readOnly checkStr="保质期至;date;false;;100" name="expirationDate_${item.wareId}" id="expirationDate" value="" ${readonly} ></td>
+					<#else>
+						<#assign guaranteePeriod=(item.guaranteePeriod)!'-1'>
+						<#if ((guaranteePeriod==-1)&&isModify)>
+						 <#assign guaranteePeriod=guaranteePeriodMap[id]>
+						 <#else>
+						 <#if guaranteePeriod==-1>
+						 	<#assign guaranteePeriod=''>
+						 </#if>
+						</#if>
+					<td><input type="text" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" maxlength="10" checkStr="保质期;num;true;;100" name="guaranteePeriod_${item.wareId}" id="guaranteePeriod" value="${(guaranteePeriod)!'0'}" ${readonly}></td>
+					<td><input type="text" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" readOnly checkStr="保质期至;date;true;;100" name="expirationDate_${item.wareId}" id="expirationDate" value="${(item.expirationDate?string('yyyy-MM-dd'))!''}" ${readonly} 
+						onclick="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'2008-01-01',maxDate:'2020-01-01'})"></td>
+					</#if>
+					<td><input type="text" checkStr="备注;txt;false;;100" name="memo_${item.wareId}" size="20" id="memo" value="${(item.memo)!''}" ${readonly}></td>
+					</#if>
+					<td><input type="hidden" name="itemId" value="${item.wareId}"></td>
+				</tr>
+			</#list>
+		
+		
+	</table>
+	<#if hasSource==false>
+	   <#if isModify==true>
+	<input type="button" name="button" id="add" class="modifysubbtn" onclick="addRow()" value="添加" />
+	<input type="button" name="button" id="delete" class="modifysubbtn" onclick="delRow()" value="删除" />
+	   </#if>
+	</#if>
+</div>
+
+&nbsp;&nbsp;

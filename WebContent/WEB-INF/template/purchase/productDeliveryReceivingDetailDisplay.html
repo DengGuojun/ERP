@@ -1,0 +1,67 @@
+<meta charset="utf-8" />
+
+<#assign readonly= "">
+<#if isModify==false>
+<#assign readonly= "readonly">
+</#if>
+
+<#if isDelivery==true>
+<p>发货明细</p>
+<#else>
+<p>收货明细</p>
+</#if>
+<style>
+th span{color:#e22000;font-size:12px;line-height: 23px; font-family:\5FAE\8F6F\96C5\9ED1, \65B0\5B8B\4F53}
+</style>
+<div id="detailDisplay">
+	<table id="detail" width="100%" border="0" cellpadding="0" class="table_style">
+		<tr>
+			<th>商品类型</th>
+			<th>商品项编码</th>
+			<th>商品项名称</th>
+			<th>型号规格</th>
+			<th>采购计量单位</th>
+			<#if isDelivery==true>
+			<th><span>*</span>已发货数量</th>
+			<#else>
+			<th><span>*</span>已收货数量</th>
+			</#if>
+			<th width="20%">备注</th>
+		</tr>
+		
+		<!-- 发货 -->
+		<#if isDelivery==true>
+			<#list OrderItemList as item>
+			<tr>
+				<#assign id="${item.itemId}">
+				<#assign wareId="${item.wareId}">
+				<td>${ItemTypeMap[id]}</td>
+				<td>${item.wareNumber}</td>
+				<td>${ItemDetailMap[id].itemName}</td>
+				<td>${ItemDetailMap[id].specification}</td>
+				<td>${item.unit}</td>
+				<td><input type="text" size="10" maxlength="10" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' checkStr="发货数量;num;true;;100" name="deliveryQuantiry_${wareId}" id="deliveryQuantiry" value="${(DeliveryNoteItemMap[wareId].deliveryQuantiry)!'0'}" ${readonly}></td>
+				<td><input type="text" checkStr="备注;txt;false;;100" name="memo_${wareId}" id="memo" value="${(DeliveryNoteItemMap[wareId].memo)!''}" ${readonly}></td>
+				<td><input type="hidden" name="itemId" value="${id}"></td>
+			</tr>
+		</#list>
+		<#else>
+		<!-- 收货 -->
+			<#list NoteItemList as item>
+			<tr>
+				<#assign id="${item.dnItemId}">
+				<td>${ItemTypeMap[id]}</td>
+				<td>${item.wareNumber}</td>
+				<td>${ItemDetailMap[id].itemName}</td>
+				<td>${ItemDetailMap[id].specification}</td>
+				<td>${item.unit}</td>
+				<td><input type="text" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' checkStr="收货数量;num;true;;100" name="receiveQuantity_${id}" id="receiveQuantity" value="${(ReceivingNoteItemMap[id].receiveQuantity)!'0'}" ${readonly}></td>
+				<td><input type="text" checkStr="备注;txt;false;;100" name="memo_${id}" id="memo" value="${(ReceivingNoteItemMap[id].memo)!''}" ${readonly}></td>
+				<td><input type="hidden" name="itemId" value="${id}"></td>
+			</tr>
+		</#list>
+		</#if>
+	</table>
+</div>
+
+&nbsp;&nbsp;

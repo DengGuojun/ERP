@@ -1,0 +1,69 @@
+<meta charset="utf-8" />
+
+<#assign readonly= "">
+<style>
+th span{color:#e22000;font-size:12px;line-height: 23px; font-family:\5FAE\8F6F\96C5\9ED1, \65B0\5B8B\4F53}
+</style>
+<p>出库明细</p>
+<div id="detailDisplay">
+	<table id="detail" width="100%" border="0" cellpadding="0" class="table_style">
+		<tr>
+			<#if hasSource==false>
+			<th><input type="checkbox" id="selectAll" onchange="checkAll(this)">选择</th>
+			</#if>
+			<th>物料编码</th>
+			<th>物料名称</th>
+			<th>型号规格</th>
+			<th>采购计量单位</th>
+			<th><span>*</span>出库数量</th>
+			<th>当前可用库存</th>
+			<th>批次号</th>
+			<th>库存类型</th>
+			<th>生产日期</th>
+			<th>保质期(天)</th>
+			<th>保质期至</th>
+			<th width="10%">备注</th>
+		</tr>
+		
+		
+			<#list ItemList as item>
+				<tr>
+				<#assign id="${item.wareId}">
+				<#assign dvItemId="${item.dvItemId}">
+				<#assign inventoryType="${item.inventoryType}">
+					<#if hasSource==false>
+					<td><input type="checkbox" name="select"></td>
+					</#if>
+					<td><span>${(ItemDetailMap[id].materialNumber)!''}</span></td>
+					<td><span>${(ItemDetailMap[id].materialName)!''}</span></td>
+					<td><span>${(ItemDetailMap[id].specification)!''}</span></td>
+					<td><input type="hidden" name="unit_${item.dvItemId}" id="unit" value="${item.unit}"><span>${(UnitNameMap[id])!''}</span></span></td>
+					<td><input type="text" onkeyup='this.value=this.value.replace(/[^\-?\d.]/g,"")' size="10" maxlength="10" checkStr="出库数量;num;true;;100" name="stockInQuantity_${item.dvItemId}" id="stockOutQuantity" value="${(item.stockOutQuantity)!''}" onchange="itemModifyOnChange(this)" ${readonly}></td>
+					<td><span id="inventoryQty">${(inventoryQtyMap[dvItemId])!''}</span></td>
+					<td><input type="hidden" name="batchNumber_${item.dvItemId}" id="batchNumber" value="${(item.batchNumber)!''}"><span>${(item.batchNumber)!''}</span></td>
+					<td><input type="hidden" name="inventoryType_${item.dvItemId}" id="inventoryType" value="${(inventoryType)!''}"><span>${(inventoryTypeMap[inventoryType])!''}</span></td>
+					<td><input type="hidden" name="productionDate_${item.dvItemId}" id="productionDate" value="${(item.productionDate?string('yyyy-MM-dd'))!''}"><span>${(item.productionDate?string('yyyy-MM-dd'))!''}</span></td>
+					<#assign guaranteePeriod=(item.guaranteePeriod)!'-1'>
+						<#if guaranteePeriod==-1>
+						 <#assign guaranteePeriod='--'>
+						</#if>
+					<td><input type="hidden"  name="guaranteePeriod_${item.dvItemId}" id="guaranteePeriod" value="${item.guaranteePeriod}"><span>${guaranteePeriod}</span></td>
+					<td><input type="hidden" name="expirationDate_${item.dvItemId}" id="expirationDate" value="${(item.expirationDate?string('yyyy-MM-dd'))!'--'}"><span>${(item.expirationDate?string('yyyy-MM-dd'))!'--'}</span></td>
+					<td><input type="text" checkStr="备注;txt;false;;100" name="memo_${item.dvItemId}" size="10" maxlength="20" id="memo" value="" ${readonly}></td>
+					<td><input type="hidden" name="itemId" value="${item.dvItemId}"></td>
+					<td><input type="hidden" name="wiId" value="${wiIdMap[dvItemId]}"></td>
+					<td><input type="hidden" name="wareId_${item.dvItemId}" value="${item.wareId}"></td>
+				</tr>
+			</#list>
+		
+		
+	</table>
+	<#if hasSource==false>
+	    <#if isModify==true>
+	<input type="button" name="button" id="add" class="modifysubbtn" onclick="addRow()" value="添加" />
+	<input type="button" name="button" id="delete" class="modifysubbtn" onclick="delRow()" value="删除" />
+	    </#if>
+	</#if>
+</div>
+
+&nbsp;&nbsp;
